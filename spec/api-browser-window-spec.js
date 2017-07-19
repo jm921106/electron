@@ -2671,7 +2671,7 @@ describe('BrowserWindow module', function () {
     })
   })
 
-  describe('offscreen rendering', function () {
+  describe.only('offscreen rendering', function () {
     const isOffscreenRenderingDisabled = () => {
       const contents = webContents.create({})
       const disabled = typeof contents.isOffscreen !== 'function'

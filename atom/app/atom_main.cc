@@ -80,8 +80,7 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE, wchar_t* cmd, int) {
 
     _CrtSetReportHook(
       [](int report_type, char* message, int* return_value) -> int {
-        puts(message);
-        TCHAR path[MAX_PATH];
+        /*TCHAR path[MAX_PATH];
         if (GetModuleFileName(NULL, path, _countof(path))) {
           auto p = wcsrchr(path, '\\');
           if (p) {
@@ -100,9 +99,29 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE, wchar_t* cmd, int) {
                 CloseHandle(pi.hProcess);
             }
           }
-        }
+        }*/
         return 0;
     });
+
+    TCHAR path[MAX_PATH];
+    if (GetModuleFileName(NULL, path, _countof(path))) {
+      auto p = wcsrchr(path, '\\');
+      if (p) {
+        *p = 0;
+        TCHAR cmdline[512];
+        swprintf_s(cmdline, L"procdump.exe -accepteula -t %d electron.dmp",
+                   GetCurrentProcessId());
+        STARTUPINFO si = { sizeof(si) };
+        PROCESS_INFORMATION pi = {};
+        if (CreateProcess(std::wstring(path).append(1, '\\')
+                            .append(L"procdump.exe").c_str(),
+                          cmdline, nullptr, nullptr,
+                          FALSE, 0, nullptr, path, &si, &pi)) {
+            CloseHandle(pi.hThread);
+            CloseHandle(pi.hProcess);
+        }
+      }
+    }
   }
 #endif
 
